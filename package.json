@@ -4,8 +4,15 @@
   "description": "pull inital set of data from github",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "update": "chmod a+x updategitdependency.sh && ./updategitdependency.sh",
+    "build": "chmod a+x buildtestimage.sh && ./buildtestimage.sh c3pobot/datainit",
+    "prod": "chmod a+x buildprodimage.sh && ./buildprodimage.sh c3pobot/datainit"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "logger": "github:c3pobot/logger",
+    "node-fetch": "^2.6.12"
+  }
 }
