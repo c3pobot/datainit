@@ -2,8 +2,8 @@
 const log = require('logger')
 const path = require('path')
 const fs = require('fs')
-const fetch = require('./fetch')
-
+const s3client = require('s3client')
+const S3_BUCKET = process.env.S3_DATA_BUCKET || 'gamedata'
 const DATA_PATH = process.env.DATA_PATH || path.join(baseDir, 'data')
 
 const saveFile = async(fileName, fileData)=>{
@@ -18,19 +18,19 @@ const checkFileExists = async(fileName)=>{
     let status = await fs.readFileSync(path.join(DATA_PATH, fileName))
     if(status) return true
   }catch(e){
-    log.debug(fileName+' does not exist')
+    //log.debug(fileName+' does not exist')
   }
 }
 const downloadFiles = async()=>{
   try{
-    let versions = await fetch('versions.json')
+    let versions = await s3client.get(S3_BUCKET, 'versions.json')
     if(versions?.gameVersion && versions?.localeVersion){
       log.info('Downloading files for '+versions.gameVersion+'...')
       for(let i in versions){
         if(versions[i] !== versions.localeVersion && i !== 'gameVersion' && i !== 'assetVersion'){
           let status = await checkFileExists(i)
           if(status) continue;
-          let fileData = await fetch(i)
+          let fileData = await s3client.get(S3_BUCKET, i)
           if(fileData){
             await saveFile(i, fileData)
           }else{
@@ -38,13 +38,13 @@ const downloadFiles = async()=>{
           }
         }
       }
-      let localeFile = await fetch('Loc_ENG_US.txt.json')
+      let localeFile = await s3client.get(S3_BUCKET, 'Loc_ENG_US.txt.json')
       if(localeFile){
         await saveFile('Loc_ENG_US.txt.json', localeFile)
       }else{
         throw('Error getting Loc_ENG_US.txt.json')
       }
-      let localeKeyMap = await fetch('Loc_Key_Mapping.txt.json')
+      let localeKeyMap = await s3client.get(S3_BUCKET, 'Loc_Key_Mapping.txt.json')
       if(localeKeyMap){
         await saveFile('Loc_Key_Mapping.txt.json', localeKeyMap)
       }else{

@@ -13,6 +13,6 @@
   "license": "ISC",
   "dependencies": {
     "logger": "github:c3pobot/logger",
-    "node-fetch": "^2.6.12"
+    "s3client": "github:c3pobot/s3client"
   }
 }
